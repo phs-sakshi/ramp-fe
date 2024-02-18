@@ -5,6 +5,7 @@ import { useCustomFetch } from "./useCustomFetch"
 
 export function useTransactionsByEmployee(): TransactionsByEmployeeResult {
   const { fetchWithCache, loading } = useCustomFetch()
+  const [nextPage, setNextPage] = useState<number | null>(null)
   const [transactionsByEmployee, setTransactionsByEmployee] = useState<Transaction[] | null>(null)
 
   const fetchById = useCallback(
@@ -15,15 +16,16 @@ export function useTransactionsByEmployee(): TransactionsByEmployeeResult {
           employeeId,
         }
       )
-
+      setNextPage(null)
       setTransactionsByEmployee(data)
     },
     [fetchWithCache]
   )
 
   const invalidateData = useCallback(() => {
+    setNextPage(0)
     setTransactionsByEmployee(null)
   }, [])
 
-  return { data: transactionsByEmployee, loading, fetchById, invalidateData }
+  return { data: transactionsByEmployee, loading, fetchById, invalidateData, nextPage }
 }

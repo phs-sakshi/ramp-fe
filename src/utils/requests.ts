@@ -35,7 +35,7 @@ export const getTransactionsPaginated = ({
 
   return {
     nextPage,
-    data: data.transactions.slice(start, end),
+    data: data.transactions.slice(0, end),
   }
 }
 
@@ -53,7 +53,7 @@ export const setTransactionApproval = ({ transactionId, value }: SetTransactionA
   )
 
   if (!transaction) {
-    throw new Error("Invalid transaction to approve")
+    throw new Error("Invalid transaction to approve" + transactionId)
   }
 
   transaction.approved = value

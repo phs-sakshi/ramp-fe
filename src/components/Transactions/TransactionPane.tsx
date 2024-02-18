@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { InputCheckbox } from "../InputCheckbox"
-import { TransactionPaneComponent } from "./types"
+import { TransactionPaneComponent, SetTransactionApprovalFunction } from "./types"
+import { useTransactionApproval } from "src/hooks/useTransactionApproval"
 
 export const TransactionPane: TransactionPaneComponent = ({
   transaction,
@@ -8,6 +9,14 @@ export const TransactionPane: TransactionPaneComponent = ({
   setTransactionApproval: consumerSetTransactionApproval,
 }) => {
   const [approved, setApproved] = useState(transaction.approved)
+  const { ...transactionUtils } = useTransactionApproval()
+
+  const saveTransaction = useCallback<SetTransactionApprovalFunction>(
+    async ({ transactionId, newValue }) => {
+      await transactionUtils.setTransactionApproval(transactionId, newValue)
+    },
+    [transactionUtils]
+  )
 
   return (
     <div className="RampPane">
@@ -27,7 +36,7 @@ export const TransactionPane: TransactionPaneComponent = ({
             transactionId: transaction.id,
             newValue,
           })
-
+          await saveTransaction({ transactionId: transaction.id, newValue })
           setApproved(newValue)
         }}
       />
